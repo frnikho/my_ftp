@@ -35,9 +35,16 @@ int check_quit(const char *received)
     return (0);
 }
 
+int send_code(int client_fd, long code)
+{
+    write(client_fd, &code, 1);
+}
+
 int send_msg(int client_fd, const char *msg)
 {
-    return write(client_fd, msg, strlen(msg));
+    int a = write(client_fd, msg, strlen(msg));
+    write(client_fd, "\r\n", 2); //TODO CHECK CRLF
+    return a;
 }
 
 int server_run(server_t *serv)
@@ -52,8 +59,7 @@ int server_run(server_t *serv)
                 continue;
             FD_SET(serv->client_fd[i], &serv->fds);
         }
-        int rc = select(FD_SETSIZE, &serv->fds, NULL, NULL, &serv->timeout);
-        if (rc == -1)
+        if (select(FD_SETSIZE, &serv->fds, NULL, NULL, &serv->timeout) == -1)
             break;
         handle_client(serv);
     }

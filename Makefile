@@ -7,7 +7,8 @@ TESTPATH	=	tests
 SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/client.c						\
 				$(SRCPATH)/server_close.c				\
-				$(SRCPATH)/server_init.c
+				$(SRCPATH)/server_init.c				\
+				$(SRCPATH)/commands.c
 
 MAIN		=	$(SRCPATH)/main.c
 

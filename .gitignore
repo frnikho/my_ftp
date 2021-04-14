@@ -4,3 +4,4 @@ CMakeLists.txt
 **/*.gc*
 myftp
 .idea
+test_ftp.sh

@@ -9,6 +9,8 @@
 #include <stdlib.h>
 #include <zconf.h>
 #include <stdio.h>
+#include <errno.h>
+#include <string.h>
 
 int add_client(server_t *server, int client_fd)
 {
@@ -28,10 +30,22 @@ int remove_client(server_t *server, int client_fd)
         if (server->client_fd[i] == client_fd) {
             server->client_fd[i] = -1;
             FD_CLR(client_fd, &server->fds);
-            return (0);
+            return (CLIENT_DISCONNECT);
         }
     }
     return (-1);
+}
+
+int check_client_command(server_t *serv, int client)
+{
+    char *buffer = calloc(1, FD_SETSIZE);
+    read(client, buffer, FD_SETSIZE);
+    if (buffer == 0 || buffer[0] == 0) {
+        return remove_client(serv, client);
+    }
+    handle_commands(serv, client, buffer);
+    free(buffer);
+    return (0);
 }
 
 void handle_client(server_t *serv)
@@ -39,23 +53,18 @@ void handle_client(server_t *serv)
     if (FD_ISSET(serv->sock_fd, &serv->fds)) {
         int ci = accept(serv->sock_fd, (struct sockaddr *)&serv->addr_in, (socklen_t *)&serv->accept_len);
         int nc = add_client(serv, ci);
-        send_msg(ci, "~>");
+        send_msg(ci, "220");
         printf("client n°%d connected\n", nc);
     }
     for (int i = 0; i < BACKLOG; i++) {
         int client = serv->client_fd[i];
         if (client == -1)
             continue;
-        if (FD_ISSET(client, &serv->fds) != 0) {
-            char *buffer = calloc(1, FD_SETSIZE);
-            read(client, buffer, FD_SETSIZE);
-            if (buffer == 0 || buffer[0] == 0) {
-                remove_client(serv, client);
-                printf("client n°%d disconnected\n", i);
-            } else {
-                printf("client n°%d -> %s", i, buffer);
-            }
-            free(buffer);
+        if (FD_ISSET(client, &serv->fds) > 0) {
+           int a = check_client_command(serv, client);
+           if (a == CLIENT_DISCONNECT) {
+               printf("client n°%d disconnected\n", i);
+           }
         }
     }
 }
