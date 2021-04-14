@@ -40,9 +40,6 @@ int handle_commands(server_t *server, int client_fd, char *old_cmd)
 {
     cmd_t cmds[10] = {{"USER", user_cmd}, {"PASS", pass_cmd}, {0, 0}};
     char *ptr = strtok(extract_cmd(old_cmd), " ");
-
-    printf("ptr: %s -- cmd: %s\n", ptr, old_cmd);
-
     long code = 0;
 
     for (int i = 0; cmds[i].cmd != 0; i++) {
@@ -50,8 +47,11 @@ int handle_commands(server_t *server, int client_fd, char *old_cmd)
             code = cmds[i].cmd(server, client_fd);
         }
     }
-    char code_str[3];
-    sprintf(code_str, "%ld", code);
-    send_msg(client_fd, code_str);
+
+    if (code != 0) {
+        char code_str[3];
+        sprintf(code_str, "%ld", code);
+        send_msg(client_fd, code_str);
+    }
     return (0);
 }

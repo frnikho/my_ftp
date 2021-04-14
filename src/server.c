@@ -42,6 +42,8 @@ int send_code(int client_fd, long code)
 
 int send_msg(int client_fd, const char *msg)
 {
+    printf("[DEBUG] => send message '%s'\n", msg);
+
     int a = write(client_fd, msg, strlen(msg));
     write(client_fd, "\r\n", 2); //TODO CHECK CRLF
     return a;
