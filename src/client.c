@@ -9,8 +9,6 @@
 #include <stdlib.h>
 #include <zconf.h>
 #include <stdio.h>
-#include <errno.h>
-#include <string.h>
 
 int add_client(server_t *server, int client_fd)
 {
@@ -44,7 +42,6 @@ int check_client_command(server_t *serv, int client)
         return remove_client(serv, client);
     }
     handle_commands(serv, client, buffer);
-    free(buffer);
     return (0);
 }
 
@@ -52,6 +49,10 @@ void handle_client(server_t *serv)
 {
     if (FD_ISSET(serv->sock_fd, &serv->fds)) {
         int ci = accept(serv->sock_fd, (struct sockaddr *)&serv->addr_in, (socklen_t *)&serv->accept_len);
+        if (ci == -1) {
+            printf("can't accept more client !\n");
+            return;
+        }
         int nc = add_client(serv, ci);
         send_msg(ci, "220");
         printf("client n°%d connected\n", nc);

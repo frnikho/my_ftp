@@ -35,35 +35,29 @@ int check_quit(const char *received)
     return (0);
 }
 
-int send_code(int client_fd, long code)
-{
-    write(client_fd, &code, 1);
-}
-
 int send_msg(int client_fd, const char *msg)
 {
+    #ifndef DEBUG
     printf("[DEBUG] => send message '%s'\n", msg);
-
+    #endif
     int a = write(client_fd, msg, strlen(msg));
-    write(client_fd, "\r\n", 2); //TODO CHECK CRLF
+    write(client_fd, "\r\n", 2);
     return a;
 }
 
-int server_run(server_t *serv)
+int server_run(server_t *s)
 {
     signal(SIGINT, signal_callback_handler);
-    printf("FTP server launched at: %s:%d\n", inet_ntoa(serv->addr_in.sin_addr), htons(serv->addr_in.sin_port));
+    int port = htons(s->addr_in.sin_port);
+    printf(SERVER_STARTUP_MSG, ADDR(s->addr_in.sin_addr), port);
     while (quit != 1) {
-        FD_ZERO(&serv->fds);
-        FD_SET(serv->sock_fd, &serv->fds);
-        for (int i = 0; i < BACKLOG; i++) {
-            if (serv->client_fd[i] == -1)
-                continue;
-            FD_SET(serv->client_fd[i], &serv->fds);
-        }
-        if (select(FD_SETSIZE, &serv->fds, NULL, NULL, &serv->timeout) == -1)
+        FD_ZERO(&s->fds);
+        FD_SET(s->sock_fd, &s->fds);
+        for (int i = 0; i < BACKLOG; i++)
+            s->client_fd[i] != -1 ?  FD_SET(s->client_fd[i], &s->fds) : 0;
+        if (select(FD_SETSIZE, &s->fds, NULL, NULL, &s->timeout) == -1)
             break;
-        handle_client(serv);
+        handle_client(s);
     }
     printf("server stopped ! quit %d\n", quit);
     return (0);

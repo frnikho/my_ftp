@@ -9,7 +9,7 @@
 #include <stdlib.h>
 #include "ftp.h"
 
-int show_usage()
+int show_usage(void)
 {
     printf("./myftp -help\nUSAGE: ./myftp port path\n\tport is the port");
     printf("number on which the server socket listens\n\tpath is the path");
