@@ -10,82 +10,54 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/param.h>
 #include <fcntl.h>
+#include <ctype.h>
 #include "ftp.h"
 
-server_t *server_init(int port)
+void signal_callback_handler(int signum)
 {
-    server_t *serv = malloc(sizeof(server_t));
-    serv->sock_fd = socket(AF_INET, SOCK_STREAM, PROTOCOL);
-    if (serv->sock_fd)
-        serv->addr_in = (struct sockaddr_in){AF_INET, htons(port), INADDR_ANY};
+    quit = 1;
+}
 
-    size_t size = sizeof(serv->addr_in);
-    if (bind(serv->sock_fd, (struct sockaddr *)&serv->addr_in, size)) {
-        free(serv);
-        return NULL;
+int check_quit(const char *received)
+{
+    for (int i = 0; received[i]; i++) {
+        if (!isprint(received[i])) {
+            printf("%d -", received[i]);
+        }
+        if (received[i] == EOF) {
+            printf("TES GRANDS MORTS\n");
+        }
     }
-    if ((listen(serv->sock_fd, BACKLOG)) != 0) {
-        free(serv);
-        return NULL;
-    }
-    serv->timeout = (struct timeval){TIMEOUT_SEC, TIMEOUT_USEC};
+    return (0);
+}
 
-    FD_ZERO(&serv->fds);
-    FD_SET(serv->sock_fd, &serv->fds);
-    return (serv);
+int send_msg(int client_fd, const char *msg)
+{
+    return write(client_fd, msg, strlen(msg));
 }
 
 int server_run(server_t *serv)
 {
+    signal(SIGINT, signal_callback_handler);
     printf("FTP server launched at: %s:%d\n", inet_ntoa(serv->addr_in.sin_addr), htons(serv->addr_in.sin_port));
-    socklen_t addlen = 0;
-    int connected = 0;
-
-    while (1) {
+    while (quit != 1) {
         FD_ZERO(&serv->fds);
         FD_SET(serv->sock_fd, &serv->fds);
-        FD_SET(connected, &serv->fds);
-        FD_SET(1, &serv->fds);
-        int rc = select(MAX(connected, serv->sock_fd)+1, &serv->fds, NULL, NULL, &serv->timeout);
-
-        if (FD_ISSET(serv->sock_fd, &serv->fds)) {
-            printf("CATCH SOMETING !\n");
-            connected = accept(serv->sock_fd, (struct sockaddr *)&serv->addr_in, (socklen_t *)&addlen);
-            write(connected, "hello world\n" , 13);
-            printf("Hello message sent\n");
-            FD_SET(connected, &serv->fds);
+        for (int i = 0; i < BACKLOG; i++) {
+            if (serv->client_fd[i] == -1)
+                continue;
+            FD_SET(serv->client_fd[i], &serv->fds);
         }
-        if (((FD_ISSET(connected, &serv->fds))) != 0) {
-            printf("CLIENT SENT SOMETHINGS: %d\n", FD_SETSIZE);
-            char buffer[FD_SETSIZE];
-            read(connected, &buffer, FD_SETSIZE);
-            buffer[FD_SETSIZE] = 0;
-            printf("%s\n", buffer);
-            printf("...\n");
-        }
-        if (FD_ISSET(1, &serv->fds)) {
-
-        }
+        int rc = select(FD_SETSIZE, &serv->fds, NULL, NULL, &serv->timeout);
         if (rc == -1)
             break;
-
+        handle_client(serv);
     }
-
-    return (0);
-}
-
-int server_close(server_t *server)
-{
-    if (!server)
-        return (-1);
-    if (close(server->sock_fd) == 0)
-        return (-1);
-    free(server);
+    printf("server stopped ! quit %d\n", quit);
     return (0);
 }
 
