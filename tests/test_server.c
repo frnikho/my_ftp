@@ -26,5 +26,6 @@ Test(server, same_port)
     server_t *s2 = server_init(9877, "/home/");
     cr_expect_not_null(s1);
     cr_expect_null(s2);
-
+    server_close(s1);
+    server_close(s2);
 }
