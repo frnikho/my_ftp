@@ -14,7 +14,7 @@ jobs:
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
       - name: Get master
-          run: git fetch origin master
+        run: git fetch origin master
       - name: Install criterion
         run: sh scripts/install_criterion.sh
       - name: Make tests_run
