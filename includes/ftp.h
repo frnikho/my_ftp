@@ -12,17 +12,16 @@
 
 #define BACKLOG 3
 #define PROTOCOL 0
-#define TIMEOUT_SEC 10
-#define TIMEOUT_USEC 0
+#define TIMEOUT_SEC 0
+#define TIMEOUT_USEC 1
 #define DISC 1
 #define END_CMDS {0, 0}
 
+#define DATA_PORT 52659
+
 #define DEFAULT_DIR "/tmp"
-
 #define NOT_DEFINED_VALUE  "[not defined]"
-
 #define SERVER_STARTUP_MSG "FTP server launched at: %s:%d\n"
-
 #define ADDR(x) (inet_ntoa(x))
 
 #include <netinet/in.h>
@@ -44,18 +43,20 @@ typedef struct client_s {
 
 typedef struct server_s {
     const char *default_dir;
-
-    struct sockaddr_in addr_in;
-
     int sock_fd;
-
+    struct sockaddr_in addr_in;
     struct timeval timeout;
-
     fd_set fds;
-
     client_t **client;
-
     socklen_t accept_len;
+
+
+    int data_fd;
+    struct sockaddr_in data_in;
+    fd_set data_fds;
+    client_t **data_client;
+    socklen_t data_len;
+
 } server_t;
 
 
@@ -72,6 +73,7 @@ int send_msg(int client_fd, const char *msg);
 int send_msgs(int client_fd, const char *msg);
 
 int handle_commands(server_t *server, client_t *client, char *cmd);
+int handle_data(server_t *server);
 
 volatile int quit;
 

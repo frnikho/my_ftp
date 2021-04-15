@@ -14,6 +14,8 @@ int server_close(server_t *server)
     if (!server)
         return (-1);
     close(server->sock_fd);
+    close(server->data_fd);
+
     for (int i = 0; i < BACKLOG; i++) {
         if (server->client[i]->fd != -1) {
             close(server->client[i]->fd);

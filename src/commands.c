@@ -32,10 +32,10 @@ int check_cmd_name(const char *name, const char *to_compare)
 {
     char *upper = malloc(sizeof(char) * (strlen(to_compare) + 1));
     int i = 0;
-    for (; to_compare[i] && to_compare[i] != '\n'; i++) {
+    for (; to_compare[i] && to_compare[i] != '\n' && to_compare[i] != ' '; i++) {
         if (islower(to_compare[i]))
             upper[i] = (char) toupper(to_compare[i]);
-        else
+        else if isprint(to_compare[i])
             upper[i] = to_compare[i];
     }
     upper[i] = 0;
@@ -49,14 +49,17 @@ int check_cmd_name(const char *name, const char *to_compare)
 
 int handle_commands(server_t *server, client_t *client, char *cmd)
 {
-    cmd_t cmds[10] = {USER_CMD, PASS_CMD, CWD_CMD, MODE_CMD, REIN_CMD, QUIT_CMD, DUMP_CMD,
+
+    cmd_t cmds[20] = {USER_CMD, PASS_CMD, CWD_CMD, MODE_CMD, REIN_CMD, QUIT_CMD, DUMP_CMD, PASV_CMD, SYST_CMD, FEAT_CMD,
         END_CMDS};
     long code = 0;
     for (int i = 0; cmds[i].cmd != 0; i++) {
-        if (check_cmd_name(cmds[i].name, strtok(cmd, " ")) == 1) {
+        char *cpy = malloc(sizeof(char ) * strlen(cmd));
+        if (check_cmd_name(cmds[i].name, strtok(strcpy(cpy, cmd), " ")) == 1) {
             code = cmds[i].cmd(server, client, cmd);
             break;
         }
+        free(cpy);
     }
     if (code != 0) {
         char code_str[3];

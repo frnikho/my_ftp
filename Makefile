@@ -16,6 +16,9 @@ SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/commands/user.c				\
 				$(SRCPATH)/commands/quit.c				\
 				$(SRCPATH)/commands/dump.c				\
+				$(SRCPATH)/commands/pasv.c				\
+				$(SRCPATH)/commands/syst.c				\
+				$(SRCPATH)/commands/feat.c
 
 
 
