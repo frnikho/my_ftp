@@ -5,3 +5,4 @@ CMakeLists.txt
 myftp
 .idea
 test_ftp.sh
+unit_tests
