@@ -15,6 +15,7 @@ client_t *init_client(int fd, const char *default_dir)
     client_t *client = malloc(sizeof(client_t));
     client->fd = fd;
     client->transfer_mode = FLUX;
+    client->type_ftp = TYPE_BINARY;
     client->username = NULL;
     client->password = NULL;
     if (default_dir == NULL)

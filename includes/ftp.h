@@ -32,12 +32,18 @@ enum TRANSFER_MODE {
     COMPRESSED
 };
 
+enum TYPE_FTP {
+    TYPE_ASCII,
+    TYPE_BINARY
+};
+
 typedef struct client_s {
     int fd; // TODO Need be used in the futur
     char *working_directory;
     char *username;
     char *password;
     enum TRANSFER_MODE transfer_mode;
+    enum TYPE_FTP type_ftp;
     int in_transfert;
 } client_t;
 
@@ -59,6 +65,7 @@ typedef struct server_s {
 
 } server_t;
 
+char **str_split(char *c, char split);
 
 server_t *server_init(int port, const char *default_dir);
 int server_close(server_t *server);

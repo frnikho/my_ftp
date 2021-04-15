@@ -18,7 +18,12 @@ SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/commands/dump.c				\
 				$(SRCPATH)/commands/pasv.c				\
 				$(SRCPATH)/commands/syst.c				\
-				$(SRCPATH)/commands/feat.c
+				$(SRCPATH)/commands/feat.c				\
+				$(SRCPATH)/commands/pwd.c				\
+				$(SRCPATH)/commands/type.c				\
+				$(SRCPATH)/commands/port.c				\
+				$(SRCPATH)/commands/list.c				\
+				$(SRCPATH)/str_split.c					\
 
 
 

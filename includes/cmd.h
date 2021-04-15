@@ -20,6 +20,11 @@
 #define PASV_CMD {"PASV", pasv_cmd}
 #define SYST_CMD {"SYST", syst_cmd}
 #define FEAT_CMD {"FEAT", feat_cmd}
+#define PWD_CMD {"PWD", pwd_cmd}
+#define TYPE_CMD {"TYPE", pwd_cmd}
+#define PORT_CMD {"PORT", port_cmd}
+#define LIST_CMD {"LIST", list_cmd}
+
 
 typedef struct cmd_s {
     char *name;
@@ -36,6 +41,10 @@ int dump_cmd(server_t *server, client_t *client, char *cmd);
 int pasv_cmd(server_t *serv, client_t *client, char *cmd);
 int syst_cmd(server_t *serv, client_t *client, char *cmd);
 int feat_cmd(server_t *serv, client_t *client, char *cmd);
+int pwd_cmd(server_t *server, client_t *client, char *cmd);
+int type_cmd(server_t *server, client_t *client, char *cmd);
+int port_cmd(server_t *server, client_t *client, char *cmd);
+int list_cmd(server_t *server, client_t *client, char *cmd);
 
 int check_cmd_name(const char *name, const char *to_compare);
 #endif //FTP_INCLUDES_CMD_H_

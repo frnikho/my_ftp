@@ -76,7 +76,7 @@ int server_run(server_t *s)
         if (select(FD_SETSIZE, &s->fds, NULL, NULL, &s->timeout) == -1)
             break;
         handle_client(s);
-        handle_data(s);
+        //handle_data(s);
     }
     printf("server stopped ! quit %d\n", quit);
     return (0);
@@ -117,7 +117,7 @@ int server_data_init(server_t *server)
 int server(long port, const char *fp)
 {
     server_t *serv = server_init((int) port, fp);
-    server_data_init(serv);
+    //server_data_init(serv);
     if (!serv) {
         printf("can't launch ftp server !\n");
         return (-1);
