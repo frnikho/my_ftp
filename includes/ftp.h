@@ -14,8 +14,12 @@
 #define PROTOCOL 0
 #define TIMEOUT_SEC 10
 #define TIMEOUT_USEC 0
-#define CLIENT_DISCONNECT 1
+#define DISC 1
 #define END_CMDS {0, 0}
+
+#define DEFAULT_DIR "/tmp"
+
+#define NOT_DEFINED_VALUE  "[not defined]"
 
 #define SERVER_STARTUP_MSG "FTP server launched at: %s:%d\n"
 
@@ -29,34 +33,45 @@ enum TRANSFER_MODE {
     COMPRESSED
 };
 
-typedef struct server_s {
-    struct sockaddr_in addr_in;
-    int sock_fd;
-    struct timeval timeout;
-    fd_set fds;
-    int *client_fd;
-    socklen_t accept_len;
-} server_t;
-
-
 typedef struct client_s {
     int fd; // TODO Need be used in the futur
     char *working_directory;
     char *username;
     char *password;
+    enum TRANSFER_MODE transfer_mode;
+    int in_transfert;
 } client_t;
 
-server_t *server_init(int port);
+typedef struct server_s {
+    const char *default_dir;
+
+    struct sockaddr_in addr_in;
+
+    int sock_fd;
+
+    struct timeval timeout;
+
+    fd_set fds;
+
+    client_t **client;
+
+    socklen_t accept_len;
+} server_t;
+
+
+server_t *server_init(int port, const char *default_dir);
 int server_close(server_t *server);
 int server(long port, const char *fp);
 
+client_t *init_client(int fd, const char *default_dir);
 int add_client(server_t *server, int client_fd);
 void handle_client(server_t *serv);
 int remove_client(server_t *server, int client_fd);
 
 int send_msg(int client_fd, const char *msg);
+int send_msgs(int client_fd, const char *msg);
 
-int handle_commands(server_t *server, int client_fd, char *cmd);
+int handle_commands(server_t *server, client_t *client, char *cmd);
 
 volatile int quit;
 

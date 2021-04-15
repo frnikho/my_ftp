@@ -15,17 +15,21 @@
 #define CWD_CMD {"CWD", cwd_cmd}
 #define MODE_CMD {"MODE", mode_cmd}
 #define REIN_CMD {"REIN", rein_cmd}
+#define QUIT_CMD {"QUIT", quit_cmd}
+#define DUMP_CMD {"DUMP", dump_cmd}
 
 typedef struct cmd_s {
     char *name;
-    int (*cmd) (server_t *server, int client_fd, char *cmd);
+    int (*cmd) (server_t *server, client_t *client, char *cmd);
 } cmd_t;
 
-int mode_cmd(server_t *serv, int client_id, char *cmd);
-int rein_cmd(server_t *serv, int client_id, char *cmd);
-int cwd_cmd(server_t *serv, int client_id, char *cmd);
-int user_cmd(server_t *serv, int client_fd, char *cmd);
-int pass_cmd(server_t *serv, int client_fd, char *cmd);
-int check_cmd_name(const char *name, const char *to_compare);
+int mode_cmd(server_t *serv, client_t *client, char *cmd);
+int rein_cmd(server_t *serv, client_t *client, char *cmd);
+int cwd_cmd(server_t *serv, client_t *client, char *cmd);
+int user_cmd(server_t *serv, client_t *client, char *cmd);
+int pass_cmd(server_t *serv, client_t *client, char *cmd);
+int quit_cmd(server_t *server, client_t *client, char *cmd);
+int dump_cmd(server_t *server, client_t *client, char *cmd);
 
+int check_cmd_name(const char *name, const char *to_compare);
 #endif //FTP_INCLUDES_CMD_H_

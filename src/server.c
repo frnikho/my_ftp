@@ -35,13 +35,31 @@ int check_quit(const char *received)
     return (0);
 }
 
+int send_msgs(int client_fd, const char *msg)
+{
+    int a = 0;
+    #ifdef DEBUG
+        printf("[DEBUG] => send message '%s'\n", msg);
+    #endif
+    if (msg == NULL)
+        a = write(client_fd, NOT_DEFINED_VALUE, strlen(NOT_DEFINED_VALUE));
+    else
+        a = write(client_fd, msg, strlen(msg));
+    return a;
+}
+
 int send_msg(int client_fd, const char *msg)
 {
-    #ifndef DEBUG
-    printf("[DEBUG] => send message '%s'\n", msg);
+    int a = 0;
+    #ifdef DEBUG
+        printf("[DEBUG] => send message '%s'\n", msg);
     #endif
-    int a = write(client_fd, msg, strlen(msg));
-    write(client_fd, "\r\n", 2);
+    if (msg == NULL) {
+        a = write(client_fd, NOT_DEFINED_VALUE, strlen(NOT_DEFINED_VALUE));
+    } else {
+        a = write(client_fd, msg, strlen(msg));
+        write(client_fd, "\r\n", 2);
+    }
     return a;
 }
 
@@ -54,7 +72,7 @@ int server_run(server_t *s)
         FD_ZERO(&s->fds);
         FD_SET(s->sock_fd, &s->fds);
         for (int i = 0; i < BACKLOG; i++)
-            s->client_fd[i] != -1 ?  FD_SET(s->client_fd[i], &s->fds) : 0;
+            s->client[i]->fd != -1 ? FD_SET(s->client[i]->fd, &s->fds) : 0;
         if (select(FD_SETSIZE, &s->fds, NULL, NULL, &s->timeout) == -1)
             break;
         handle_client(s);
@@ -65,7 +83,7 @@ int server_run(server_t *s)
 
 int server(long port, const char *fp)
 {
-    server_t *serv = server_init((int) port);
+    server_t *serv = server_init((int) port, fp);
     if (!serv) {
         printf("can't launch ftp server !\n");
         return (-1);

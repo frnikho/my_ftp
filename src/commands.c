@@ -27,32 +27,6 @@
     return str;
 }*/
 
-int mode_cmd(server_t *serv, int client_id, char *cmd)
-{
-    return (0);
-}
-
-int rein_cmd(server_t *serv, int client_id, char *cmd)
-{
-    return (0);
-}
-
-int cwd_cmd(server_t *serv, int client_id, char *cmd)
-{
-    return (0);
-}
-
-int user_cmd(server_t *serv, int client_fd, char *cmd)
-{
-    printf("USER CMD !\n");
-    return (331);
-}
-
-int pass_cmd(server_t *serv, int client_fd, char *cmd)
-{
-    printf("PASS CMD!\n");
-    return (230);
-}
 
 int check_cmd_name(const char *name, const char *to_compare)
 {
@@ -73,20 +47,21 @@ int check_cmd_name(const char *name, const char *to_compare)
     return (0);
 }
 
-int handle_commands(server_t *server, int client_fd, char *cmd)
+int handle_commands(server_t *server, client_t *client, char *cmd)
 {
-    cmd_t cmds[10] = {USER_CMD, PASS_CMD, CWD_CMD, MODE_CMD, REIN_CMD,
+    cmd_t cmds[10] = {USER_CMD, PASS_CMD, CWD_CMD, MODE_CMD, REIN_CMD, QUIT_CMD, DUMP_CMD,
         END_CMDS};
     long code = 0;
     for (int i = 0; cmds[i].cmd != 0; i++) {
-        if (check_cmd_name(cmds[i].name, cmd) == 1) {
-            code = cmds[i].cmd(server, client_fd, cmd);
+        if (check_cmd_name(cmds[i].name, strtok(cmd, " ")) == 1) {
+            code = cmds[i].cmd(server, client, cmd);
+            break;
         }
     }
     if (code != 0) {
         char code_str[3];
         sprintf(code_str, "%ld", code);
-        send_msg(client_fd, code_str);
+        send_msg(client->fd, code_str);
     }
     return (0);
 }

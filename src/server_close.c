@@ -15,10 +15,12 @@ int server_close(server_t *server)
         return (-1);
     close(server->sock_fd);
     for (int i = 0; i < BACKLOG; i++) {
-        if (server->client_fd[i] != -1)
-            close(server->client_fd[i]);
+        if (server->client[i]->fd != -1) {
+            close(server->client[i]->fd);
+            free(server->client[i]);
+        }
     }
-    free(server->client_fd);
+    free(server->client);
     free(server);
     return (0);
 }

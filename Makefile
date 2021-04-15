@@ -8,11 +8,21 @@ SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/client.c						\
 				$(SRCPATH)/server_close.c				\
 				$(SRCPATH)/server_init.c				\
-				$(SRCPATH)/commands.c
+				$(SRCPATH)/commands.c					\
+				$(SRCPATH)/commands/cwd.c				\
+				$(SRCPATH)/commands/mode.c				\
+				$(SRCPATH)/commands/pass.c				\
+				$(SRCPATH)/commands/rein.c				\
+				$(SRCPATH)/commands/user.c				\
+				$(SRCPATH)/commands/quit.c				\
+				$(SRCPATH)/commands/dump.c				\
+
+
 
 MAIN		=	$(SRCPATH)/main.c
 
-TESTS		=	$(TESTPATH)/test_get_argv.c				\
+TESTS		=	$(TESTPATH)/test_client.c				\
+				$(TESTPATH)/test_server.c
 
 OBJ			=	$(SRC:%.c=%.o)
 OBJMAIN		=	$(MAIN:%.c=%.o)
