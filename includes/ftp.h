@@ -26,6 +26,11 @@
 
 #include <netinet/in.h>
 
+enum DATA_MODE {
+    PASSIVE_MODE,
+    ACTIVE_MODE,
+};
+
 enum TRANSFER_MODE {
     FLUX,
     BLOCK,
@@ -45,6 +50,19 @@ typedef struct client_s {
     enum TRANSFER_MODE transfer_mode;
     enum TYPE_FTP type_ftp;
     int in_transfert;
+
+    int pass_fd;
+    struct sockaddr_in pass_in;
+    fd_set pass_fds;
+    socklen_t pass_len;
+
+    int port_fd;
+    struct sockaddr_in port_in;
+    fd_set port_fds;
+    socklen_t port_len;
+
+    enum DATA_MODE data_mode;
+
 } client_t;
 
 typedef struct server_s {
@@ -55,14 +73,6 @@ typedef struct server_s {
     fd_set fds;
     client_t **client;
     socklen_t accept_len;
-
-
-    int data_fd;
-    struct sockaddr_in data_in;
-    fd_set data_fds;
-    client_t **data_client;
-    socklen_t data_len;
-
 } server_t;
 
 char **str_split(char *c, char split);

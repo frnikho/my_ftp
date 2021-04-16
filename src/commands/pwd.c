@@ -16,6 +16,7 @@ int pwd_cmd(server_t *server, client_t *client, char *cmd)
     char *msg = malloc(sizeof(char) * 128);
     if (client->working_directory == NULL) {
         sprintf(msg, "257 \"%s\"", DEFAULT_DIR);
+        printf("default pwd\n");
     } else {
         sprintf(msg, "257 \"%s\"", client->working_directory);
     }

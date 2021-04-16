@@ -16,8 +16,16 @@ client_t *init_client(int fd, const char *default_dir)
     client->fd = fd;
     client->transfer_mode = FLUX;
     client->type_ftp = TYPE_BINARY;
+    client->data_mode = ACTIVE_MODE;
     client->username = NULL;
     client->password = NULL;
+
+    client->port_fd = -1;
+    client->port_len = -1;
+
+    client->pass_len = -1;
+    client->pass_fd = -1;
+
     if (default_dir == NULL)
         client->working_directory = DEFAULT_DIR;
     else

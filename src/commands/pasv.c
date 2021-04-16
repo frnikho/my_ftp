@@ -8,25 +8,38 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <stdio.h>
+#include <zconf.h>
 #include "ftp.h"
 
 int pasv_cmd(server_t *server, client_t *client, char *cmd)
 {
-  /*  server->data_fd = socket(AF_INET, SOCK_STREAM, PROTOCOL);
-    server->data_in = (struct sockaddr_in){AF_INET, htons(DATA_PORT), INADDR_ANY};
-    size_t size = sizeof(server->data_in);
-    if (bind(server->data_fd, (struct sockaddr *)&server->data_in, size))
-        return (0);
-    if (listen(server->data_fd, BACKLOG) != 0)  {
-        return (0);
-    }*/
-    int p1 = DATA_PORT / 256;
-    int p2 = 179;
+    if (client->pass_fd != -1) {
+        close(client->pass_fd);
+    }
 
+    client->pass_fd = socket(AF_INET, SOCK_STREAM, PROTOCOL);
+    client->pass_in = (struct sockaddr_in){AF_INET, htons(0), INADDR_ANY};
+
+    socklen_t size = sizeof(client->pass_in);
+
+    if (bind(client->pass_fd, (struct sockaddr *)&client->pass_in, size) == -1) {
+        printf("Error while binding !\n");
+        return (0);
+    }
+    if (listen(client->pass_fd, 1) == -1)  {
+        printf("Error while listening !\n");
+        return (0);
+    }
+
+    if (getsockname(client->pass_fd, (struct sockaddr *)&client->pass_in, &size)== -1) {
+        printf("GETSOCKNAME error\n");
+    }
+
+    int p1 = ntohs(client->pass_in.sin_port) / 256;
+    int p2 = ntohs(client->pass_in.sin_port) % 256;
     char *msg = malloc(sizeof(char) * 128);
-    sprintf(msg, "227 Entering Passive Mode (127, 0, 0, 1, %d, %d)", p1, p2);
+    sprintf(msg, "227 Entering Passive Mode (127, 0, 0, 1, %d, %d).", p1, p2);
     send_msg(client->fd, msg);
     free(msg);
-
     return (0);
 }

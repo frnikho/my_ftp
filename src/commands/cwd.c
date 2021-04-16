@@ -14,7 +14,9 @@ int cwd_cmd(server_t *serv, client_t *client, char *cmd)
 {
     char *new_cmd = strtok(cmd, " ");
     char *pwd = strtok(NULL, " ");
+    if (pwd == NULL) {
+        client->working_directory = pwd;
+    }
     printf("pwd: %s\n", pwd);
-    client->working_directory = pwd;
-    return (0);
+    return (200);
 }

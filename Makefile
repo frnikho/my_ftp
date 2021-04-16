@@ -23,6 +23,8 @@ SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/commands/type.c				\
 				$(SRCPATH)/commands/port.c				\
 				$(SRCPATH)/commands/list.c				\
+				$(SRCPATH)/commands/cdup.c				\
+				$(SRCPATH)/commands/retr.c				\
 				$(SRCPATH)/str_split.c					\
 
 

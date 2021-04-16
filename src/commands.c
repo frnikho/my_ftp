@@ -49,9 +49,9 @@ int check_cmd_name(const char *name, const char *to_compare)
 
 int handle_commands(server_t *server, client_t *client, char *cmd)
 {
-
-    cmd_t cmds[20] = {USER_CMD, PASS_CMD, CWD_CMD, MODE_CMD, REIN_CMD, QUIT_CMD, DUMP_CMD, PASV_CMD, SYST_CMD, FEAT_CMD, PWD_CMD, TYPE_CMD, PORT_CMD, LIST_CMD,
-        END_CMDS};
+    const cmd_t cmds[30] = {USER_CMD, PASS_CMD, CWD_CMD, MODE_CMD, REIN_CMD,
+        QUIT_CMD, DUMP_CMD, PASV_CMD, SYST_CMD, FEAT_CMD, PWD_CMD, TYPE_CMD,
+        PORT_CMD, LIST_CMD, CDUP_CMD, RETR_CMD, END_CMDS};
     long code = 0;
     for (int i = 0; cmds[i].cmd != 0; i++) {
         char *cpy = malloc(sizeof(char ) * strlen(cmd));
