@@ -19,14 +19,13 @@ int cdup_cmd(server_t *server, client_t *client, char *cmd)
     for (int i = 0; path_folder[i]; i++) {
         if (path_folder[i+1] == NULL)
             break;
-
         strcat(new_path, path_folder[i]);
         strcat(new_path, "/");
     }
 
     client->working_directory = new_path;
     char *msg = malloc(sizeof(char) * 128);
-    sprintf(msg, "257 \"%s\"", new_path);
+    sprintf(msg, "250 \"%s\"", new_path);
     send_msg(client->fd, msg);
     free(msg);
     return (0);
