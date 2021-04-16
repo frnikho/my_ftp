@@ -17,6 +17,8 @@
 #include <ctype.h>
 #include "ftp.h"
 
+volatile int quit;
+
 void signal_callback_handler(int signum)
 {
     quit = 1;
