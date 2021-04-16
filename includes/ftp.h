@@ -92,6 +92,6 @@ int send_msgs(int client_fd, const char *msg);
 int handle_commands(server_t *server, client_t *client, char *cmd);
 int handle_data(server_t *server);
 
-extern volatile int quit;
+static int quit;
 
 #endif //FTP_INCLUDES_FTP_H_
