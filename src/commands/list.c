@@ -13,10 +13,16 @@
 #include <stdlib.h>
 #include "ftp.h"
 
-char *get_perm(char *filename)
+char *get_perm(char *path, char *filename)
 {
+
+    char *np = malloc(sizeof(char) * 256);
+    strcat(np, path);
+    strcat(np, "/");
+    strcat(np, filename);
+
     struct stat fs;
-    stat(filename, &fs);
+    stat(np, &fs);
     char *perm = malloc(sizeof(char) * 1024);
     strcat(perm, (S_ISDIR(fs.st_mode)) ? "d" : "-");
     strcat(perm, fs.st_mode & S_IRUSR ? "r" : "-");
@@ -28,6 +34,7 @@ char *get_perm(char *filename)
     strcat(perm, fs.st_mode & S_IROTH ? "r" : "-");
     strcat(perm, fs.st_mode & S_IWOTH ? "w" : "-");
     strcat(perm, fs.st_mode & S_IXOTH ? "x" : "-");
+    free(np);
     return (perm);
 }
 
@@ -46,19 +53,18 @@ int list_cmd(server_t *server, client_t *client, char *cmd)
     send_msg(client->fd, "150");
 
     while ((_dir = readdir(dir)) != NULL) {
-        char *perm = get_perm(_dir->d_name);
+        char *perm = get_perm(client->working_directory, _dir->d_name);
         struct stat fs;
         stat(_dir->d_name, &fs);
 
-
-
-        dprintf(client->port_fd, "%s 1 nico nico \t%ld avril 14 17:00 %s\n", perm, fs.st_size, _dir->d_name);
+        #ifdef DEBUG
+        printf("[DEBUG] => %s %lu nico nico \t%ld avril 14 17:00 %s\n", perm, fs.st_nlink, fs.st_size, _dir->d_name);
+        #endif
+        dprintf(client->port_fd, "%s %lu nico nico \t%ld avril 14 17:00 %s\n", perm, fs.st_nlink, fs.st_size, _dir->d_name);
         free(perm);
     }
 
-   /* send_msg(client->port_fd, "-rwxr-xr-x 1 nico nico   2040 avril 14 17:00 test_ftp.sh");
-    send_msg(client->port_fd, "-rw-r--r-- 1 nico nico    965 avril 15 19:11 CMakeLists.txt");
-    send_msg(client->port_fd, "-rwxr-xr-x 1 nico nico 125520 avril 15 23:09 myftp");*/
+
     close(client->port_fd);
     client->port_fd = -1;
     send_msg(client->fd, "226 Directory send.");

@@ -6,12 +6,48 @@
 */
 
 #include <zconf.h>
+#include <stdlib.h>
+#include <string.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <signal.h>
 #include "ftp.h"
+
+static char *clean_str(char *str)
+{
+    char *clean = malloc(sizeof(char) * strlen(str));
+    int i = 0;
+    for (; str[i] != 0 && isprint(str[i]); i++) {
+        clean[i] = str[i];
+    }
+    clean[i] = 0;
+    return clean;
+}
+
+int upload_file(server_t *server, client_t *client, char *filename)
+{
+    char *fp = malloc(sizeof(char) * 256);
+    strcat(fp, client->working_directory);
+    strcat(fp, "/");
+    strcat(fp, filename);
+    int file_fd = open(fp, O_RDONLY);
+    int read_count = 0;
+    char *buff = malloc(sizeof(char) * (4096+1));
+    while ((read_count = read(file_fd, buff, 4096)) == 4096) {
+        dprintf(client->port_fd, "%s", buff);
+    }
+    dprintf(client->port_fd, "%s", buff);
+    free(fp);
+    dprintf(client->fd, "226 finish transfert\n");
+    close(client->port_fd);
+    return (0);
+}
 
 int retr_cmd(server_t *server, client_t *client, char *cmd)
 {
-    send_msg(client->port_fd, "abcdef");
-    send_msg(client->port_fd, "200");
-    close(client->port_fd);
+    strtok(cmd, " ");
+    char *filename = strtok(NULL, " ");
+    upload_file(server, client, clean_str(filename));
     return (0);
 }

@@ -22,7 +22,6 @@ int cdup_cmd(server_t *server, client_t *client, char *cmd)
         strcat(new_path, path_folder[i]);
         strcat(new_path, "/");
     }
-
     client->working_directory = new_path;
     char *msg = malloc(sizeof(char) * 128);
     sprintf(msg, "250 \"%s\"", new_path);

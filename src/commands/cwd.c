@@ -12,7 +12,7 @@
 #include <ctype.h>
 #include "ftp.h"
 
-char *clean_str(char *str)
+static char *clean_str(char *str)
 {
     char *clean = malloc(sizeof(char) * strlen(str));
     int i = 0;
@@ -23,14 +23,22 @@ char *clean_str(char *str)
     return clean;
 }
 
+int start_with(const char *str, const char *compare)
+{
+    if(strncmp(str, compare, strlen(compare)) == 0)
+        return 1;
+    return 0;
+}
+
 int cwd_cmd(server_t *serv, client_t *client, char *cmd)
 {
     strtok(cmd, " ");
     char *pwd = strtok(NULL, " ");
+
     if (pwd == NULL)
         return (420);
-    client->working_directory = clean_str(pwd);
 
+    client->working_directory = clean_str(pwd);
     send_msg(client->fd, "250");
-    return (200);
+    return (0);
 }

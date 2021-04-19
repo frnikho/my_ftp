@@ -26,6 +26,7 @@
 #define LIST_CMD {"LIST", list_cmd}
 #define CDUP_CMD {"CDUP", cdup_cmd}
 #define RETR_CMD {"RETR", retr_cmd}
+#define DELE_CMD {"DELE", dele_cmd}
 
 
 typedef struct cmd_s {
@@ -49,6 +50,7 @@ int port_cmd(server_t *server, client_t *client, char *cmd);
 int list_cmd(server_t *server, client_t *client, char *cmd);
 int cdup_cmd(server_t *server, client_t *client, char *cmd);
 int retr_cmd(server_t *server, client_t *client, char *cmd);
+int dele_cmd(server_t *server, client_t *client, char *cmd);
 
 int check_cmd_name(const char *name, const char *to_compare);
 #endif //FTP_INCLUDES_CMD_H_

@@ -25,6 +25,7 @@ SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/commands/list.c				\
 				$(SRCPATH)/commands/cdup.c				\
 				$(SRCPATH)/commands/retr.c				\
+				$(SRCPATH)/commands/dele.c				\
 				$(SRCPATH)/str_split.c					\
 
 
