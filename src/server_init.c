@@ -29,7 +29,7 @@ server_t *server_init(int port, const char *default_dir)
     serv->default_dir = default_dir;
     serv->sock_fd = socket(AF_INET, SOCK_STREAM, PROTOCOL);
     int true = 1;
-    setsockopt(serv->sock_fd, SOL_SOCKET,SO_REUSEADDR,&true,sizeof(int));
+    setsockopt(serv->sock_fd, SOL_SOCKET, SO_REUSEADDR, &true, sizeof(int));
     if (serv->sock_fd)
         serv->addr_in = (struct sockaddr_in){AF_INET, htons(port), INADDR_ANY};
     size_t size = sizeof(serv->addr_in);

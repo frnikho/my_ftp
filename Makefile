@@ -8,6 +8,7 @@ SRC 		= 	$(SRCPATH)/server.c						\
 				$(SRCPATH)/client.c						\
 				$(SRCPATH)/server_close.c				\
 				$(SRCPATH)/server_init.c				\
+				$(SRCPATH)/accept_client.c				\
 				$(SRCPATH)/commands.c					\
 				$(SRCPATH)/commands/cwd.c				\
 				$(SRCPATH)/commands/mode.c				\

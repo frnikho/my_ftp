@@ -10,6 +10,8 @@
 
 #define DEBUG 1
 
+#define READ_SIZE 4096
+
 #define BACKLOG 3
 #define PROTOCOL 0
 #define TIMEOUT_SEC 0
@@ -23,6 +25,8 @@
 #define NOT_DEFINED_VALUE  "[not defined]"
 #define SERVER_STARTUP_MSG "FTP server launched at: %s:%d\n"
 #define ADDR(x) (inet_ntoa(x))
+
+#define LIST_P "%s 0 nico nico 	%ld avril 14 17:00 %s \r\n"
 
 #include <netinet/in.h>
 
@@ -81,6 +85,7 @@ server_t *server_init(int port, const char *default_dir);
 int server_close(server_t *server);
 int server(long port, const char *fp);
 
+void accept_client(server_t *serv);
 client_t *init_client(int fd, const char *default_dir);
 int add_client(server_t *server, int client_fd);
 void handle_client(server_t *serv);

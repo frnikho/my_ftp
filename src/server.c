@@ -14,7 +14,6 @@
 #include <arpa/inet.h>
 #include <sys/param.h>
 #include <fcntl.h>
-#include <ctype.h>
 #include "ftp.h"
 
 void signal_callback_handler(int signum)
@@ -22,24 +21,11 @@ void signal_callback_handler(int signum)
     quit = 1;
 }
 
-int check_quit(const char *received)
-{
-    for (int i = 0; received[i]; i++) {
-        if (!isprint(received[i])) {
-            printf("%d -", received[i]);
-        }
-        if (received[i] == EOF) {
-            printf("TES GRANDS MORTS\n");
-        }
-    }
-    return (0);
-}
-
 int send_msgs(int client_fd, const char *msg)
 {
     int a = 0;
     #ifdef DEBUG
-        printf("[DEBUG] => send message '%s'\n", msg);
+    printf("[DEBUG] => send message '%s'\n", msg);
     #endif
     if (msg == NULL)
         a = write(client_fd, NOT_DEFINED_VALUE, strlen(NOT_DEFINED_VALUE));
@@ -52,7 +38,7 @@ int send_msg(int client_fd, const char *msg)
 {
     int a = 0;
     #ifdef DEBUG
-        printf("[DEBUG] => send message '%s'\n", msg);
+    printf("[DEBUG] => send message '%s'\n", msg);
     #endif
     if (msg == NULL) {
         a = write(client_fd, NOT_DEFINED_VALUE, strlen(NOT_DEFINED_VALUE));
@@ -76,17 +62,14 @@ int server_run(server_t *s)
         if (select(FD_SETSIZE, &s->fds, NULL, NULL, &s->timeout) == -1)
             break;
         handle_client(s);
-        //handle_data(s);
     }
     printf("server stopped ! quit %d\n", quit);
     return (0);
 }
 
-
 int server(long port, const char *fp)
 {
     server_t *serv = server_init((int) port, fp);
-    //server_data_init(serv);
     if (!serv) {
         printf("can't launch ftp server !\n");
         return (-1);

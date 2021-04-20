@@ -19,13 +19,10 @@ client_t *init_client(int fd, const char *default_dir)
     client->data_mode = ACTIVE_MODE;
     client->username = NULL;
     client->password = NULL;
-
     client->port_fd = -1;
     client->port_len = -1;
-
     client->pass_len = -1;
     client->pass_fd = -1;
-
     if (default_dir == NULL)
         client->working_directory = DEFAULT_DIR;
     else
@@ -76,24 +73,9 @@ void handle_client(server_t *serv)
         if (client == -1)
             continue;
         if (FD_ISSET(client, &serv->fds) > 0) {
-           int a = check_client_command(serv, serv->client[i]);
-           if (a == DISC) {
-               printf("client n°%d disconnected\n", i);
-           }
+            int a = check_client_command(serv, serv->client[i]);
+            a == DISC ? printf("client n°%d disconnected\n", i) : 0;
         }
     }
-    if (FD_ISSET(serv->sock_fd, &serv->fds)) {
-        int ci = accept(serv->sock_fd, (struct sockaddr *)&serv->addr_in, (socklen_t *)&serv->accept_len);
-        if (ci == 0) {
-            printf("can't open client !");
-            return;
-        }
-        int nc = add_client(serv, ci);
-        if (nc == -1) {
-            send_msg(ci, "cant'accept more client !\n");
-            close(ci);
-        }
-        send_msg(ci, "220");
-        printf("client n°%d connected\n", nc);
-    }
+    accept_client(serv);
 }

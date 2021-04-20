@@ -11,23 +11,29 @@
 #include <zconf.h>
 #include "ftp.h"
 
+struct sockaddr_in create_addr(int port, const char *addr)
+{
+    struct sockaddr_in ad = {
+        AF_INET,
+        htons(port),
+        inet_addr(addr)
+    };
+    return ad;
+}
+
 int init_data_socket(client_t *client, int port, char *address)
 {
-    if (client->port_fd == -1) {
+    if (client->port_fd == -1)
         close(client->port_fd);
-    }
     client->port_fd = socket(AF_INET, SOCK_STREAM, PROTOCOL);
     if (client->port_fd == -1) {
         printf("Can't startup client port socket");
         return (0);
     }
-    struct sockaddr_in addr = {
-        AF_INET,
-        htons(port),
-        inet_addr(address)
-    };
+    struct sockaddr_in addr = create_addr(port, address);
+    int *f = &client->port_fd;
     printf("%s : %d\n", inet_ntoa(addr.sin_addr), addr.sin_port);
-    int rt = connect(client->port_fd, (const struct sockaddr *) &addr, sizeof(addr));
+    int rt = connect((*f), (const struct sockaddr *) &addr, sizeof(addr));
     if (rt == -1) {
         printf("Error while connecting to server !\n");
     } else {

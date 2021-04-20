@@ -11,7 +11,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <signal.h>
 #include "ftp.h"
 
 static char *clean_str(char *str)
@@ -27,17 +26,21 @@ static char *clean_str(char *str)
 
 int upload_file(server_t *server, client_t *client, char *filename)
 {
-    char *fp = malloc(sizeof(char) * 256);
+    char *fp = calloc(1, sizeof(char) * 256);
     strcat(fp, client->working_directory);
     strcat(fp, "/");
     strcat(fp, filename);
     int file_fd = open(fp, O_RDONLY);
-    int read_count = 0;
-    char *buff = malloc(sizeof(char) * (4096+1));
-    while ((read_count = read(file_fd, buff, 4096)) == 4096) {
-        dprintf(client->port_fd, "%s", buff);
+    if (file_fd <= 0) {
+        printf("Error while opening file !");
+        free(fp);
+        return (0);
     }
-    dprintf(client->port_fd, "%s", buff);
+    int read_count = 0;
+    char buff = 0;
+    while ((read_count = read(file_fd, &buff, 1)) == 1) {
+        dprintf(client->port_fd, "%c", buff);
+    }
     free(fp);
     dprintf(client->fd, "226 finish transfert\n");
     close(client->port_fd);

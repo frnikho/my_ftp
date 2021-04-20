@@ -16,30 +16,19 @@ int pasv_cmd(server_t *server, client_t *client, char *cmd)
     if (client->pass_fd != -1) {
         close(client->pass_fd);
     }
-
     client->pass_fd = socket(AF_INET, SOCK_STREAM, PROTOCOL);
     client->pass_in = (struct sockaddr_in){AF_INET, htons(0), INADDR_ANY};
-
     socklen_t size = sizeof(client->pass_in);
-
-    if (bind(client->pass_fd, (struct sockaddr *)&client->pass_in, size) == -1) {
+    if (bind(client->pass_fd, (struct sockaddr *)&client->pass_in, size)==-1) {
         printf("Error while binding !\n");
         return (0);
     }
-    if (listen(client->pass_fd, 1) == -1)  {
+    if (listen(client->pass_fd, 1) == -1) {
         printf("Error while listening !\n");
         return (0);
     }
-
-    if (getsockname(client->pass_fd, (struct sockaddr *)&client->pass_in, &size)== -1) {
-        printf("GETSOCKNAME error\n");
-    }
-
     int p1 = ntohs(client->pass_in.sin_port) / 256;
     int p2 = ntohs(client->pass_in.sin_port) % 256;
-    char *msg = malloc(sizeof(char) * 128);
-    sprintf(msg, "227 Entering Passive Mode (127, 0, 0, 1, %d, %d).", p1, p2);
-    send_msg(client->fd, msg);
-    free(msg);
+    dprintf(client->fd, "227 Pasv (127, 0, 0, 1, %d, %d).\r\n", p1, p2);
     return (0);
 }

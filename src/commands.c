@@ -30,9 +30,9 @@
 
 int check_cmd_name(const char *name, const char *to_compare)
 {
-    char *upper = malloc(sizeof(char) * (strlen(to_compare) + 1));
+    char *upper = calloc(1, sizeof(char) * (strlen(to_compare) + 1));
     int i = 0;
-    for (; to_compare[i] && to_compare[i] != '\n' && to_compare[i] != ' '; i++) {
+    for (; to_compare[i] && to_compare[i] != '\n'&&to_compare[i] != ' '; i++) {
         if (islower(to_compare[i]))
             upper[i] = (char) toupper(to_compare[i]);
         else if isprint(to_compare[i])
@@ -54,7 +54,7 @@ int handle_commands(server_t *server, client_t *client, char *cmd)
         PORT_CMD, LIST_CMD, CDUP_CMD, RETR_CMD, DELE_CMD, END_CMDS};
     long code = 0;
     for (int i = 0; cmds[i].cmd != 0; i++) {
-        char *cpy = malloc(sizeof(char ) * strlen(cmd));
+        char *cpy = calloc(1, sizeof(char) * (strlen(cmd) + 1));
         if (check_cmd_name(cmds[i].name, strtok(strcpy(cpy, cmd), " ")) == 1) {
             code = cmds[i].cmd(server, client, cmd);
             break;
