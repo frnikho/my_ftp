@@ -48,6 +48,7 @@ int remove_client(server_t *server, int client_fd)
     for (int i = 0; i < BACKLOG; i++) {
         if (server->client[i]->fd == client_fd) {
             FD_CLR(client_fd, &server->fds);
+            close(client_fd);
             server->client[i]->fd = -1;
             return (DISC);
         }
